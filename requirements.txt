@@ -2,4 +2,5 @@ numpy
 torch
 soundfile
 scikit-learn
+scipy
 matplotlib  # for plotting results

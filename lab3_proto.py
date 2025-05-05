@@ -12,6 +12,22 @@ def words2phones(wordList, pronDict, addSilence=True, addShortPause=True):
     Output:
        list of phone symbols
     """
+    phoneList = []
+
+    for i, word in enumerate(wordList):
+        phones = pronDict[word]
+        phoneList.extend(phones)
+        # Add short pause after each word except the last
+        if addShortPause:
+            phoneList.append('sp')
+
+    # Add silence at beginning and end if needed
+    if addSilence:
+        phoneList = ['sil'] + phoneList + ['sil']
+
+    return phoneList
+
+
 
 def forcedAlignment(lmfcc, phoneHMMs, phoneTrans):
     """ forcedAlignmen: aligns a phonetic transcription at the state level
