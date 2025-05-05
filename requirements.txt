@@ -1,0 +1,5 @@
+numpy
+torch
+soundfile
+scikit-learn
+matplotlib  # for plotting results
