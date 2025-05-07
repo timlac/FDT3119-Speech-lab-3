@@ -1,4 +1,7 @@
 import numpy as np
+
+from lab2_proto import concatHMMs, viterbi
+from lab2_tools import log_multivariate_normal_density_diag
 from lab3_tools import *
 
 def words2phones(wordList, pronDict, addSilence=True, addShortPause=True):
@@ -29,7 +32,7 @@ def words2phones(wordList, pronDict, addSilence=True, addShortPause=True):
 
 
 
-def forcedAlignment(lmfcc, phoneHMMs, phoneTrans):
+def forcedAlignment(lmfcc, phoneHMMs, phoneTrans, nstates):
     """ forcedAlignmen: aligns a phonetic transcription at the state level
 
     Args:
@@ -43,4 +46,19 @@ def forcedAlignment(lmfcc, phoneHMMs, phoneTrans):
        list of strings in the form phoneme_index specifying, for each time step
        the state from phoneHMMs corresponding to the viterbi path.
     """
+    utteranceHMM = concatHMMs(phoneHMMs, phoneTrans)
+    obsloglik = log_multivariate_normal_density_diag(lmfcc, utteranceHMM['means'], utteranceHMM['covars'])
+
+    viterbi_loglik, viterbi_path = (
+        viterbi(obsloglik,
+                np.log(utteranceHMM['startprob']),
+                np.log(utteranceHMM['transmat']))
+    )
+
+    stateTrans = [phone + '_' + str(stateid) for phone in phoneTrans for stateid in range(nstates[phone])]
+    viterbiStateTrans = [stateTrans[state_id] for state_id in viterbi_path]
+    return viterbiStateTrans
+
+
+
 
